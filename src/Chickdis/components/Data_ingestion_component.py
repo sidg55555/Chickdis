@@ -1,12 +1,13 @@
 
 
-from Chickdis.entity import DataIngestionConfig
+from Chickdis.entity import BaseModelConfig, DataIngestionConfig
 import os
 from Chickdis import logger
 import urllib.request as request
 from Chickdis.utils.common import get_size
 from pathlib import Path
 import zipfile
+import tensorflow as tf
 
 class DataIngestion:
     def __init__(self, config: DataIngestionConfig):
@@ -30,5 +31,3 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         self.download_data()
         self.extract_zip_file()
-        
-    

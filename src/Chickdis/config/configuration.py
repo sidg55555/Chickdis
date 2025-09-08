@@ -1,6 +1,6 @@
 from Chickdis.constants import *
 from Chickdis.utils.common import read_yaml, create_directories
-from Chickdis.entity import DataIngestionConfig
+from Chickdis.entity import BaseModelConfig, DataIngestionConfig
 
 class ConfigurationManager:
     def __init__(self, 
@@ -20,3 +20,20 @@ class ConfigurationManager:
             unzip_dir=Path(config.unzip_dir)
         )
         return data_ingestion_config
+    
+    def get_base_model_config(self) -> BaseModelConfig:
+        config = self.config.prepare_base_model
+        params= self.params
+        create_directories([config.root_dir])
+        base_model_config = BaseModelConfig(
+            root_dir=Path(config.root_dir),
+            base_model_path=Path(config.base_model_path),
+            updated_model_path=Path(config.base_model_updated_path),
+            params_image_size= params.IMAGE_SIZE,
+            params_learning_rate= params.LEARNING_RATE,
+            params_include_top=params.INCLUDE_TOP,
+            params_weights=params.WEIGHTS,
+            params_classes=params.CLASSES
+        )
+        
+        return base_model_config
