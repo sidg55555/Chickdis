@@ -1,6 +1,7 @@
 from Chickdis.constants import *
 from Chickdis.utils.common import read_yaml, create_directories
-from Chickdis.entity import BaseModelConfig, DataIngestionConfig
+from Chickdis.entity import BaseModelConfig, Callbacks_config, DataIngestionConfig, TrainingConfig
+import os
 
 class ConfigurationManager:
     def __init__(self, 
@@ -37,3 +38,32 @@ class ConfigurationManager:
         )
         
         return base_model_config
+    def get_callback_config(self):
+        config=self.config.prepare_callbacks
+        create_directories([Path(config.checkpoint_model_filepath),Path(config.tensorboard_root_log_dir)])
+        prepare_callback_config=Callbacks_config(
+            root_dir=Path(config.root_dir),
+            tensorboard_root_log_dir=Path(config.tensorboard_root_log_dir),
+            checkpoint_model_filepath= Path(config.checkpoint_model_filepath)
+        )
+        return prepare_callback_config
+    
+    def get_training_config(self):
+        config_training=self.config.training
+        prepare_base_model=self.config.prepare_base_model
+        
+        params=self.params
+        training_data=os.path.join(self.config.data_ingestion.unzip_dir,"Chicken-fecal-images")
+        create_directories([Path(config_training.root_dir)])
+        training_config=TrainingConfig(
+                root_dir= Path(config_training.root_dir),
+                trained_model_path= Path(config_training.trained_model_path),
+                updated_model_path= Path(prepare_base_model.base_model_updated_path),
+                training= Path(training_data),
+                params_epoch= int(params.EPOCHS),
+                params_batch_size= int(params.BATCH_SIZE),
+                params_is_augmented= params.AUGMENTATION,
+                params_image_size= params.IMAGE_SIZE
+
+        )
+        return training_config
